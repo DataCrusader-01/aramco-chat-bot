@@ -3,7 +3,7 @@ requests
 lxml
 deep-translator
 pydub
-python-dotenv
+ffmpeg
 concurrent.futures
 langdetect
 groq
