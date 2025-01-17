@@ -20,3 +20,4 @@ requests>=2.25.1
 langchain_core
 pydantic
 langchain_groq 
+lxml
