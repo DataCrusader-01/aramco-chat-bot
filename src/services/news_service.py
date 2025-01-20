@@ -6,7 +6,7 @@ import json
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 
-from news_scraper.news_scrapers import site_selector
+from services.news_scrapers import site_selector
 from services.translation_service import translate_article_data
 from utils.aramco_alert import process_rag
 

@@ -91,7 +91,7 @@ class Audio_Prcessor:
                 os.remove(chunk_path)
             raise e
         
-    def audio_processor(video_path):
+    def audio_processor(self, video_path):
         try:
             # Convert video to audio
             audio_processor = Audio_Prcessor()
