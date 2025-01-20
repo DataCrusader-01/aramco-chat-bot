@@ -49,9 +49,9 @@ def main():
                 elif "youtube.com" in video_url:
                     video_url_str = str(video_url)
                     yt_dict = yt_info(video_url_str)
-                    audio_service = Audio_Prcessor()
-                    audio_output = audio_service.audio_yt(yt_dict=yt_dict)
-                    st.json(audio_output)
+                    # audio_service = Audio_Prcessor()
+                    # audio_output = audio_service.audio_yt(yt_dict=yt_dict)
+                    st.json(yt_dict)
                     st.success("Video uploaded and converted to audio!")
                 else:
                     st.error("Please enter a valid Video URL.")

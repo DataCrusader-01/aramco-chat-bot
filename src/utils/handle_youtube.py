@@ -1,5 +1,8 @@
 from googleapiclient.discovery import build
 from urllib.parse import urlparse, parse_qs
+import streamlit as st
+from services.translation_service import translate_article_data
+from utils.aramco_alert import process_rag
 
 def get_video_id(url):
     parsed_url = urlparse(url)
@@ -41,4 +44,24 @@ def yt_info(video_url):
 
     dict = {"title": video_title, "content": video_description}
 
-    return dict
+    try:
+            yt_translated = translate_article_data(dict)
+            if "aramco" not in yt_translated['content'].lower() or "aramco" not in yt_translated['content'].lower():
+                return {"Mention":"No Aramco Mention"}
+            else:
+                rag_result = process_rag(translated_text=yt_translated['content'])
+            return rag_result
+    except Exception as e:
+            st.error(f"Error processing audio: {str(e)}")
+
+
+# def audio_yt(yt_dict):
+#         try:
+#             yt_translated = translate_article_data(yt_dict)
+#             if "aramco" not in yt_dict['content'].lower() or "aramco" not in yt_translated['content'].lower():
+#                 return {"Mention":"No Aramco Mention"}
+#             else:
+#                 rag_result = process_rag(translated_text=yt_translated['content'])
+#             return rag_result
+#         except Exception as e:
+#             st.error(f"Error processing audio: {str(e)}")
