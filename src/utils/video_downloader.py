@@ -173,7 +173,7 @@ class VideoDownloader:
                     st.success("Video downloaded successfully from AWS!")
                     return video_path
             elif 'instagram.com' in url:
-                video_path = self.download_regular_video(url)
+                video_path = self.download_insta_video(url)
                 if video_path:
                     st.success("Video downloaded successfully from Instagram!")
                     return video_path
