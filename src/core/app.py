@@ -36,7 +36,7 @@ def main():
     elif input_source == "Video URL":
             video_url = st.text_input("Enter Video URL")
             if st.button("Download Video"):
-                if video_url:
+                if "youtube.com" not in video_url:
                     video_url_str = str(video_url)
                     video_service = VideoDownloader()
                     video_path = video_service.download(video_url_str)
@@ -45,6 +45,11 @@ def main():
                     st.json(audio_output)
                     # st.success("Video uploaded and converted to audio!")
                     st.success("Video downloaded and converted to audio!")
+                elif "youtube.com" in video_url:
+                    audio_service = Audio_Prcessor()
+                    audio_output = audio_service.audio_yt(video_path=video_url)
+                    st.json(audio_output)
+                    st.success("Video uploaded and converted to audio!")
                 else:
                     st.error("Please enter a valid Video URL.")
 

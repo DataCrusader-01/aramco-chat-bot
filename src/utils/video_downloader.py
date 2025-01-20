@@ -7,6 +7,7 @@ import bs4
 import re
 from pathlib import Path
 import streamlit as st
+import instaloader
 
 class VideoDownloader:
     def __init__(self):
@@ -73,6 +74,52 @@ class VideoDownloader:
             self.logger.error(f"Twitter download error: {str(e)}")
             return None
 
+
+    def download_insta_video(self, url):
+        """Download video from Instagram URL"""
+        try:
+            # Get the video URL from the Instagram URL
+            L = instaloader.Instaloader()
+            USERNAME = 'sanji_369'
+            PASSWORD = 'Veget@@009'
+            L.login(USERNAME, PASSWORD)
+            # Download the video
+            post = instaloader.Post.from_shortcode(L.context, url.split("/")[-2])
+            # L.download_post(post, target="downloads")
+
+            # Temporary file to save the video
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as temp_file:
+                video_url = post.video_url
+                response = requests.get(video_url, stream=True)
+                total_size = int(response.headers.get("content-length", 0))
+
+                # Create a progress bar
+                progress_bar = st.progress(0)
+                progress_text = st.empty()
+
+                downloaded_size = 0
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        temp_file.write(chunk)
+                        downloaded_size += len(chunk)
+
+                        # Update progress
+                        if total_size:
+                            progress = downloaded_size / total_size
+                            progress_bar.progress(progress)
+                            progress_text.text(f"Downloaded: {downloaded_size // 1024 // 1024}MB / {total_size // 1024 // 1024}MB")
+
+                progress_text.text("Download completed!")
+                return temp_file.name
+
+        except Exception as e:
+                st.error(f"Error downloading Instagram video: {str(e)}")
+                self.logger.error(f"Instagram download error: {str(e)}")
+                return None
+
+
+
+
     def download_regular_video(self, url):
         """Download video from a direct video URL"""
         try:
@@ -125,8 +172,13 @@ class VideoDownloader:
                 if video_path:
                     st.success("Video downloaded successfully from AWS!")
                     return video_path
+            elif 'instagram.com' in url:
+                video_path = self.download_regular_video(url)
+                if video_path:
+                    st.success("Video downloaded successfully from Instagram!")
+                    return video_path
             else:
-                st.text(f"Enter valid url path. Either twitter or aws s3 url")
+                st.text(f"Enter valid url path. Either Instagram, X(twitter) or AWS S3 url")
                 return None
 
         except Exception as e:
@@ -142,9 +194,9 @@ class VideoDownloader:
             st.error(f"An error occurred during download: {str(e)}")
             return None
 
-if __name__ == "__main__":
-    video_path = "https://x.com/SBA_sport/status/1863333797938262190"
-    video_downloader = VideoDownloader()
-    video_downloader.video_processor(video_path)
-    print("Video downloaded successfully!")
-    print(video_path)
+# if __name__ == "__main__":
+#     video_path = "https://www.instagram.com/reel/DE_ODJrhBId/?utm_source=ig_web_copy_link"
+#     video_downloader = VideoDownloader()
+#     video_downloader.video_processor(video_path)
+#     print("Video downloaded successfully!")
+#     print(video_path)
