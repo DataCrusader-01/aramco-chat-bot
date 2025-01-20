@@ -107,7 +107,7 @@ class Audio_Prcessor:
         except Exception as e:
             st.error(f"Error processing audio: {str(e)}")
 
-    def audio_yt(self, yt_dict):
+    def audio_yt(self,yt_dict):
         try:
             yt_translated = translate_article_data(yt_dict)
             if "aramco" not in yt_dict['content'].lower() or "aramco" not in yt_translated['content'].lower():
