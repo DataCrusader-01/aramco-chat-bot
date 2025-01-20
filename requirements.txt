@@ -21,3 +21,4 @@ langchain_core
 pydantic
 langchain_groq 
 lxml
+instaloader
