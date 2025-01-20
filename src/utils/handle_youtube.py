@@ -40,3 +40,5 @@ def yt_info(video_url):
     video_description = response['items'][0]['snippet']['description']
 
     dict = {"title": video_title, "content": video_description}
+
+    return dict

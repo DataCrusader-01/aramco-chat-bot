@@ -8,6 +8,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 from utils.video_downloader import VideoDownloader
 from utils.audio_converter import Audio_Prcessor
 from services.news_service import NewsService
+from utils.handle_youtube import yt_info
 
 
 def main():
@@ -46,8 +47,10 @@ def main():
                     # st.success("Video uploaded and converted to audio!")
                     st.success("Video downloaded and converted to audio!")
                 elif "youtube.com" in video_url:
+                    video_url_str = str(video_url)
+                    yt_dict = yt_info(video_url_str)
                     audio_service = Audio_Prcessor()
-                    audio_output = audio_service.audio_yt(video_path=video_url)
+                    audio_output = audio_service.audio_yt(yt_dict)
                     st.json(audio_output)
                     st.success("Video uploaded and converted to audio!")
                 else:
