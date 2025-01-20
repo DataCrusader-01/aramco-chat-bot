@@ -80,9 +80,18 @@ class VideoDownloader:
         try:
             # Get the video URL from the Instagram URL
             L = instaloader.Instaloader()
-            USERNAME = 'sanji_369'
-            PASSWORD = 'Veget@@009'
-            L.login(USERNAME, PASSWORD)
+            # USERNAME = 'sanji_369'
+            # PASSWORD = 'Veget@@009'
+            # L.login(USERNAME, PASSWORD)
+            # Load session or login
+            try:
+                L.load_session_from_file('sanji_369')
+            except FileNotFoundError:
+                USERNAME = 'sanji_369'
+                PASSWORD = 'Veget@@009'
+                L.login(USERNAME, PASSWORD)
+                L.save_session_to_file()
+
             # Download the video
             post = instaloader.Post.from_shortcode(L.context, url.split("/")[-2])
             # L.download_post(post, target="downloads")
