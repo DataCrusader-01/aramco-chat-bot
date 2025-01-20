@@ -22,46 +22,37 @@ def get_video_id(url):
 
 
 def yt_info(video_url):
-    API_KEY = "AIzaSyA5xJXjhTA8FzOilw5SFibmTsnRFlMMsXs"
-
-    # Build the YouTube Data API client
-    youtube = build('youtube', 'v3', developerKey=API_KEY)
-
-    #Get video id from URL
-    video_id = get_video_id(video_url)
-
-    # Request video details
-    request = youtube.videos().list(
-        part="snippet",
-        id=video_id
-    )
-
-    response = request.execute()
-
-    # Extract the video title and description
-    video_title = response['items'][0]['snippet']['title']
-    video_description = response['items'][0]['snippet']['description']
-
-    dict = {"title": video_title, "content": video_description}
-
     try:
-            yt_translated = translate_article_data(dict)
-            if "aramco" not in yt_translated['content'].lower() or "aramco" not in yt_translated['content'].lower():
+        API_KEY = "AIzaSyA5xJXjhTA8FzOilw5SFibmTsnRFlMMsXs"
+
+        # Build the YouTube Data API client
+        youtube = build('youtube', 'v3', developerKey=API_KEY)
+
+        #Get video id from URL
+        video_id = get_video_id(video_url)
+
+        # Request video details
+        request = youtube.videos().list(
+            part="snippet",
+            id=video_id
+        )
+
+        response = request.execute()
+
+        # Extract the video title and description
+        video_title = response['items'][0]['snippet']['title']
+        video_description = response['items'][0]['snippet']['description']
+
+        dict = {"title": video_title, "content": video_description}
+
+    
+        yt_translated = translate_article_data(dict)
+        if "aramco" not in yt_translated['content'].lower() or "aramco" not in yt_translated['content'].lower():
                 return {"Mention":"No Aramco Mention"}
-            else:
+        else:
                 rag_result = process_rag(translated_text=yt_translated['content'])
-            return rag_result
+        return rag_result
     except Exception as e:
             st.error(f"Error processing audio: {str(e)}")
 
 
-# def audio_yt(yt_dict):
-#         try:
-#             yt_translated = translate_article_data(yt_dict)
-#             if "aramco" not in yt_dict['content'].lower() or "aramco" not in yt_translated['content'].lower():
-#                 return {"Mention":"No Aramco Mention"}
-#             else:
-#                 rag_result = process_rag(translated_text=yt_translated['content'])
-#             return rag_result
-#         except Exception as e:
-#             st.error(f"Error processing audio: {str(e)}")
