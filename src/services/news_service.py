@@ -25,20 +25,34 @@ class NewsService:
         # rag_result = process_rag(translated_text=content)
         if  not any(keyword.lower() in title.lower() for keyword in self.aramco_keywords) and not any(keyword.lower() in content.lower() for keyword in self.aramco_keywords):
                 user_response = st.radio("Do you want to process further?", ("Yes", "No"))
-                if user_response == "Yes":
-                    rag_result = process_rag(translated_text=content)
-                    return rag_result
-                else:
-                    return {"Mention":"No Aramco Mention"}
+                submit_button = st.button("Submit")
+                if submit_button:
+                    if user_response == "Yes":
+                        rag_result = process_rag(translated_text=content)
+                        result = {
+                                        "Title": title,
+                                        "Content": content,
+                                        "Date": translated['date'],
+                                        "Analysis": json.loads(rag_result)
+                                    }
+                        return result
+                    elif user_response == "No":
+                        return {"Mention":"No Aramco Mention"}
         else:
             rag_result = process_rag(translated_text=content)
-            return rag_result
-        # print(content)
-        result = {
+            result = {
             "Title": title,
             "Content": content,
             "Date": translated['date'],
             "Analysis": json.loads(rag_result)
         }
+            return result
+        # print(content)
+    # result = {
+    #         "Title": title,
+    #         "Content": content,
+    #         "Date": translated['date'],
+    #         "Analysis": json.loads(rag_result)
+    #     }
         
-        return result
+    # return result

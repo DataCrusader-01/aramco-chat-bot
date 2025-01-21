@@ -101,12 +101,14 @@ class Audio_Prcessor:
             audio_dict = {"audio_path":audio_path, "content":audio_trancript}
             audio_translated = translate_article_data(audio_dict)
             if  not any(keyword.lower() in audio_trancript.lower() for keyword in self.aramco_keywords):
-                user_response = st.radio("Do you want to process further?", ("Yes", "No"))
-                if user_response == "Yes":
-                    rag_result = process_rag(translated_text=audio_translated['content'])
-                    return rag_result
-                else:
-                    return {"Mention":"No Aramco Mention"}
+                user_response = st.radio("There are no aramco mentions do you still wish to have further analysis", ("Yes", "No"))
+                submit_button = st.button("Submit")
+                if submit_button:
+                    if user_response == "Yes":
+                        rag_result = process_rag(translated_text=audio_translated['content'])
+                        return rag_result
+                    elif user_response == "No":
+                        return {"Mention":"No Aramco Mention"}
             else:
                 rag_result = process_rag(translated_text=audio_translated['content'])
             return rag_result
