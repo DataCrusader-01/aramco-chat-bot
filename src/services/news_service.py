@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 import json
+import streamlit as st
 
 # Add src directory to Python path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -19,9 +20,19 @@ class NewsService:
         translated = translate_article_data(content)
         title = translated['title']
         content = translated['content']
-        if "aramco" not in title.lower() and "aramco" not in content.lower():
-            return {"Mention":"No Aramco Mention"}
-        rag_result = process_rag(translated_text=content)
+        # if "aramco" not in title.lower() and "aramco" not in content.lower():
+        #     return {"Mention":"No Aramco Mention"}
+        # rag_result = process_rag(translated_text=content)
+        if  not any(keyword.lower() in title.lower() for keyword in self.aramco_keywords) and not any(keyword.lower() in content.lower() for keyword in self.aramco_keywords):
+                user_response = st.radio("Do you want to process further?", ("Yes", "No"))
+                if user_response == "Yes":
+                    rag_result = process_rag(translated_text=content)
+                    return rag_result
+                else:
+                    return {"Mention":"No Aramco Mention"}
+        else:
+            rag_result = process_rag(translated_text=content)
+            return rag_result
         # print(content)
         result = {
             "Title": title,
