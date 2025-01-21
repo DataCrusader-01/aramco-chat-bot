@@ -10,6 +10,7 @@ from utils.aramco_alert import process_rag
 
 
 class Audio_Prcessor:
+    aramco_keywords = ["aramco", "#aramco", "#saudiaramco", "#saudi#aramco","#aramcosaudi", "#aramco#saudi"]
     def video_to_audio(self, video_path):
             """Convert a video file to an audio file."""
             try:
@@ -99,21 +100,15 @@ class Audio_Prcessor:
             audio_trancript = audio_processor.transcribe_audio(audio_path)
             audio_dict = {"audio_path":audio_path, "content":audio_trancript}
             audio_translated = translate_article_data(audio_dict)
-            if "aramco" not in audio_trancript.lower():
-                return {"Mention":"No Aramco Mention"}
+            if  not any(keyword.lower() in audio_trancript.lower() for keyword in self.aramco_keywords):
+                user_response = st.radio("Do you want to process further?", ("Yes", "No"))
+                if user_response == "Yes":
+                    rag_result = process_rag(translated_text=audio_translated['content'])
+                    return rag_result
+                else:
+                    return {"Mention":"No Aramco Mention"}
             else:
                 rag_result = process_rag(translated_text=audio_translated['content'])
             return rag_result
         except Exception as e:
             st.error(f"Error processing audio: {str(e)}")
-
-    # def audio_yt(self,yt_dict):
-    #     try:
-    #         yt_translated = translate_article_data(yt_dict)
-    #         if "aramco" not in yt_dict['content'].lower() or "aramco" not in yt_translated['content'].lower():
-    #             return {"Mention":"No Aramco Mention"}
-    #         else:
-    #             rag_result = process_rag(translated_text=yt_translated['content'])
-    #         return rag_result
-    #     except Exception as e:
-    #         st.error(f"Error processing audio: {str(e)}")
