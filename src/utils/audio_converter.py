@@ -111,6 +111,6 @@ class Audio_Prcessor:
                         return {"Mention":"No Aramco Mention"}
             else:
                 rag_result = process_rag(translated_text=audio_translated['content'])
-            return rag_result
+                return rag_result
         except Exception as e:
             st.error(f"Error processing audio: {str(e)}")
