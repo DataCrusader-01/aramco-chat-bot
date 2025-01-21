@@ -101,7 +101,8 @@ class Audio_Prcessor:
             audio_dict = {"audio_path":audio_path, "content":audio_trancript}
             audio_translated = translate_article_data(audio_dict)
             if  not any(keyword.lower() in audio_trancript.lower() for keyword in self.aramco_keywords):
-                user_response = st.radio("There are no aramco mentions do you still wish to have further analysis", ("Yes", "No"))
+                user_response = st.radio("There are no aramco mentions do you still wish to have further analysis", ("Select","Yes", "No"),
+                                         index=0)
                 submit_button = st.button("Submit")
                 if submit_button:
                     if user_response == "Yes":
