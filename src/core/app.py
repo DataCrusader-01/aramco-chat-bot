@@ -43,7 +43,7 @@ def main():
                     video_path = video_service.download(video_url_str)
                     audio_service = Audio_Prcessor()
                     audio_output = audio_service.audio_processor(video_path=video_path)
-                    st.json(audio_output)
+                    # st.json(audio_output)
                     # st.success("Video uploaded and converted to audio!")
                     st.success("Video downloaded and converted to audio!")
                 elif "youtube.com" in video_url:
