@@ -14,45 +14,25 @@ from utils.aramco_alert import process_rag
 
 class NewsService:
 
+    aramco_keywords = ["aramco", "#aramco", "#saudiaramco", "#saudi#aramco","#aramcosaudi", "#aramco#saudi"]
     def fetch_article(self, url):
         # Logic to fetch the article content
         content = site_selector(url)
         translated = translate_article_data(content)
         title = translated['title']
         content = translated['content']
-        # if "aramco" not in title.lower() and "aramco" not in content.lower():
-        #     return {"Mention":"No Aramco Mention"}
-        # rag_result = process_rag(translated_text=content)
+        aramco_status: bool = False
+        
         if  not any(keyword.lower() in title.lower() for keyword in self.aramco_keywords) and not any(keyword.lower() in content.lower() for keyword in self.aramco_keywords):
-                user_response = st.radio("Do you want to process further?", ("Yes", "No"))
-                submit_button = st.button("Submit")
-                if submit_button:
-                    if user_response == "Yes":
-                        rag_result = process_rag(translated_text=content)
-                        result = {
+                aramco_status = False
+        else: aramco_status = True
+
+        rag_result = process_rag(translated_text=content)
+        result = {
                                         "Title": title,
                                         "Content": content,
                                         "Date": translated['date'],
-                                        "Analysis": json.loads(rag_result)
+                                        "Analysis": json.loads(rag_result),
+                                        "Aramco Mention": aramco_status
                                     }
-                        return result
-                    elif user_response == "No":
-                        return {"Mention":"No Aramco Mention"}
-        else:
-            rag_result = process_rag(translated_text=content)
-            result = {
-            "Title": title,
-            "Content": content,
-            "Date": translated['date'],
-            "Analysis": json.loads(rag_result)
-        }
-            return result
-        # print(content)
-    # result = {
-    #         "Title": title,
-    #         "Content": content,
-    #         "Date": translated['date'],
-    #         "Analysis": json.loads(rag_result)
-    #     }
-        
-    # return result
+        return result

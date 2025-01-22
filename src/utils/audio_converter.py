@@ -124,7 +124,12 @@ class Audio_Prcessor:
             audio_transcript = self.transcribe_audio(audio_path)
             audio_dict = {"audio_path": audio_path, "content": audio_transcript}
             audio_translated = translate_article_data(audio_dict)
-
+            rag_result = process_rag(translated_text=audio_translated['content'])
+            aramco_mentions = False
+            if not any(keyword.lower() in audio_transcript.lower() for keyword in self.aramco_keywords):
+                aramco_mentions = False
+            else:
+                aramco_mentions = True
             if not any(keyword.lower() in audio_transcript.lower() for keyword in self.aramco_keywords):
                 # Create columns for better layout
                 col1, col2 = st.columns([3, 1])

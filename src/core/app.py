@@ -20,7 +20,11 @@ def main():
     st.sidebar.header("Input Options")
     input_source = st.sidebar.radio("Choose Input Source", ["Video File", "Video URL", "News Article URL"])
 
-    audio_path = None  # Initialize audio_path variable for later use
+    # Initialize session state variables
+    if "article_data" not in st.session_state:
+        st.session_state["article_data"] = None
+    if "user_input" not in st.session_state:
+        st.session_state["user_input"] = "No"
 
     # Handle Video File Input
     if input_source == "Video File":
@@ -31,57 +35,74 @@ def main():
             audio_service = Audio_Prcessor()
             audio_output = audio_service.audio_processor(video_path)
             st.json(audio_output)
-            # st.success("Video uploaded and converted to audio!")
 
-        # Handle Video URL Input
+    # Handle Video URL Input
     elif input_source == "Video URL":
-            video_url = st.text_input("Enter Video URL")
-            if st.button("Download Video"):
-                if "youtube.com" not in video_url:
-                    video_url_str = str(video_url)
-                    video_service = VideoDownloader()
-                    video_path = video_service.download(video_url_str)
-                    audio_service = Audio_Prcessor()
-                    audio_output = audio_service.audio_processor(video_path=video_path)
-                    # st.json(audio_output)
-                    # st.success("Video uploaded and converted to audio!")
-                    st.success("Video downloaded and converted to audio!")
-                elif "youtube.com" in video_url:
-                    video_url_str = str(video_url)
-                    yt_dict = yt_info(video_url_str)
-                    # audio_service = Audio_Prcessor()
-                    # audio_output = audio_service.audio_yt(yt_dict=yt_dict)
-                    st.json(yt_dict)
-                    st.success("Video uploaded and converted to audio!")
-                else:
-                    st.error("Please enter a valid Video URL.")
+        video_url = st.text_input("Enter Video URL")
+        if st.button("Download Video"):
+            if "youtube.com" not in video_url:
+                video_service = VideoDownloader()
+                video_path = video_service.download(video_url)
+                audio_service = Audio_Prcessor()
+                st.session_state["article_data"] = audio_service.audio_processor(video_path=video_path)
+                if st.session_state["article_data"]:
+                    article_data = st.session_state["article_data"]
+                    if article_data["Aramco Mention"] == False:
+                        st.warning("There are no Aramco mentions in the article.")
+                if st.session_state.get("article_data"):
+                    article_data = st.session_state["article_data"]
+                    if article_data["Aramco Mention"] == False:
+                        st.warning("There are no Aramco mentions in the article.")
+                        st.radio(
+                            "There are no Aramco mentions. Do you still wish to have further analysis?",
+                            ["No", "Yes"],
+                        key="user_input"
+                        )
+                        if st.session_state["user_input"] == "Yes":
+                            st.json(article_data)
+                        elif st.session_state["user_input"] == "No":
+                            st.json({"Aramco Mention": "We don't have any Aramco mentions in the news article."})
+                    else:
+                        st.json(article_data)
+            elif "youtube.com" in video_url:
+                yt_dict = yt_info(video_url)
+                st.success("YouTube video processed successfully!")
+                st.json(yt_dict)
+            else:
+                st.error("Please enter a valid Video URL.")
 
     # Handle News Article URL Input
     elif input_source == "News Article URL":
         news_url = st.text_input("Enter News Article URL")
+
         if st.button("Fetch News"):
             if news_url:
                 news_service = NewsService()
-                article_data = news_service.fetch_article(news_url)
-                # st.write(article_data)
-                st.json(article_data)
+                st.session_state["article_data"] = news_service.fetch_article(news_url)
+                if st.session_state["article_data"]:
+                    article_data = st.session_state["article_data"]
+                    if article_data["Aramco Mention"] == False:
+                        st.warning("There are no Aramco mentions in the article.")
             else:
                 st.error("Please enter a valid News Article URL.")
+        # Display results based on session state
+        if st.session_state.get("article_data"):
+            article_data = st.session_state["article_data"]
+            if article_data["Aramco Mention"] == False:
+                st.warning("There are no Aramco mentions in the article.")
+                st.radio(
+                    "There are no Aramco mentions. Do you still wish to have further analysis?",
+                    ["No", "Yes"],
+                   key="user_input"
+                )
+                if st.session_state["user_input"] == "Yes":
+                    st.json(article_data)
+                elif st.session_state["user_input"] == "No":
+                    st.json({"Aramco Mention": "We don't have any Aramco mentions in the news article."})
+            else:
+                st.json(article_data)
 
-    # Transcription and Translation Section
-    # st.markdown("---")
-    # st.subheader("Transcription and Translation")
-    # if audio_path:
-    #     transcription_service = TranscriptionService()
-    #     transcribed_text = transcription_service.transcribe_audio(audio_path)
-    #     st.text_area("Transcribed Text", transcribed_text, height=300)
 
-    #     # translation_service = TranslationService()
-    #     translated_text = translate_article_data(transcribed_text)
-    #     st.text_area("Translated Text", translated_text, height=300)
-    # else:
-    #     st.info("Upload or process a video to enable transcription and translation.")
-        
 
 if __name__ == "__main__":
     main()
