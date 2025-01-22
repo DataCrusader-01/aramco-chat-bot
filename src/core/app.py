@@ -64,7 +64,8 @@ def main():
                 st.warning("There are no Aramco mentions in the video content.")
                 st.radio(
                     "There are no Aramco mentions. Do you still wish to have further analysis?",
-                    ["No", "Yes"], key="user_input"
+                    ["No", "Yes"],
+                   key="user_input"
                 )
                 if st.session_state["user_input"] == "Yes":
                     st.json(article_data)
