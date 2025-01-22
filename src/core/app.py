@@ -39,37 +39,40 @@ def main():
     # Handle Video URL Input
     elif input_source == "Video URL":
         video_url = st.text_input("Enter Video URL")
+
         if st.button("Download Video"):
-            if "youtube.com" not in video_url:
-                video_service = VideoDownloader()
-                video_path = video_service.download(video_url)
-                audio_service = Audio_Prcessor()
-                st.session_state["article_data"] = audio_service.audio_processor(video_path=video_path)
-                if st.session_state["article_data"]:
-                    article_data = st.session_state["article_data"]
-                    if article_data["Aramco Mention"] == False:
-                        st.warning("There are no Aramco mentions in the article.")
-                if st.session_state.get("article_data"):
-                    article_data = st.session_state["article_data"]
-                    if article_data["Aramco Mention"] == False:
-                        st.warning("There are no Aramco mentions in the article.")
-                        st.radio(
-                            "There are no Aramco mentions. Do you still wish to have further analysis?",
-                            ["No", "Yes"],
-                        key="user_input"
-                        )
-                        if st.session_state["user_input"] == "Yes":
-                            st.json(article_data)
-                        elif st.session_state["user_input"] == "No":
-                            st.json({"Aramco Mention": "We don't have any Aramco mentions in the news article."})
-                    else:
-                        st.json(article_data)
-            elif "youtube.com" in video_url:
-                yt_dict = yt_info(video_url)
-                st.success("YouTube video processed successfully!")
-                st.json(yt_dict)
+            if video_url:
+                if "youtube.com" not in video_url:
+                    video_service = VideoDownloader()
+                    video_path = video_service.download(video_url)
+                    audio_service = Audio_Prcessor()
+                    st.session_state["article_data"] = audio_service.audio_processor(video_path=video_path)
+                elif "youtube.com" in video_url:
+                    yt_dict = yt_info(video_url)
+                    st.session_state["article_data"] = yt_dict
+                    st.success("YouTube video processed successfully!")
+                else:
+                    st.error("Please enter a valid Video URL.")
             else:
                 st.error("Please enter a valid Video URL.")
+        
+        # Display results based on session state
+        if st.session_state.get("article_data"):
+            article_data = st.session_state["article_data"]
+            if "Aramco Mention" in article_data and article_data["Aramco Mention"] == False:
+                st.warning("There are no Aramco mentions in the video content.")
+                st.radio(
+                    "There are no Aramco mentions. Do you still wish to have further analysis?",
+                    ["No", "Yes"],
+                    key="user_input"
+                )
+                if st.session_state["user_input"] == "Yes":
+                    st.json(article_data)
+                elif st.session_state["user_input"] == "No":
+                    st.json({"Aramco Mention": "We don't have any Aramco mentions in the video content."})
+            else:
+                st.json(article_data)
+
 
     # Handle News Article URL Input
     elif input_source == "News Article URL":
