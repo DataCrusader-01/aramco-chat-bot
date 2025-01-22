@@ -59,12 +59,12 @@ def main():
         # Display results based on session state
         if st.session_state.get("article_data"):
             article_data = st.session_state["article_data"]
-            if "Aramco Mention" in article_data and article_data["Aramco Mention"] == False:
+            print(article_data)
+            if article_data["Aramco Mention"] == False:
                 st.warning("There are no Aramco mentions in the video content.")
                 st.radio(
                     "There are no Aramco mentions. Do you still wish to have further analysis?",
-                    ["No", "Yes"],
-                    key="user_input"
+                    ["No", "Yes"], key="user_input"
                 )
                 if st.session_state["user_input"] == "Yes":
                     st.json(article_data)
