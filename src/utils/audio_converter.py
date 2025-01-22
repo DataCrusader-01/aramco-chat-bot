@@ -101,17 +101,18 @@ class Audio_Prcessor:
             audio_dict = {"audio_path":audio_path, "content":audio_trancript}
             audio_translated = translate_article_data(audio_dict)
             if  not any(keyword.lower() in audio_trancript.lower() for keyword in self.aramco_keywords):
-                user_response = st.radio("There are no aramco mentions do you still wish to have further analysis", ("Select","Yes", "No"),
-                                         index=0)
+                user_response = st.radio("There are no aramco mentions do you still wish to have further analysis", ("Yes", "No"))
                 submit_button = st.button("Submit")
                 if submit_button:
-                    if user_response == "Yes":
+                    # if user_response == "Yes":
                         rag_result = process_rag(translated_text=audio_translated['content'])
-                        return rag_result
-                    elif user_response == "No":
-                        return {"Mention":"No Aramco Mention"}
+                        # return rag_result
+                        st.json(rag_result)
+                else:
+                        rag_result = {"Mention":"No Aramco Mention"}
+                        st.json(rag_result)
             else:
                 rag_result = process_rag(translated_text=audio_translated['content'])
-                return rag_result
+                st.json(rag_result)
         except Exception as e:
             st.error(f"Error processing audio: {str(e)}")
