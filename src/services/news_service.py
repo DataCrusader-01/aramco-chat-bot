@@ -14,16 +14,16 @@ from utils.aramco_alert import process_rag
 
 class NewsService:
 
-    aramco_keywords = ["aramco", "#aramco", "#saudiaramco", "#saudi#aramco","#aramcosaudi", "#aramco#saudi"]
     def fetch_article(self, url):
         # Logic to fetch the article content
+        aramco_keywords = ["aramco", "#aramco", "#saudiaramco", "#saudi#aramco","#aramcosaudi", "#aramco#saudi"]
         content = site_selector(url)
         translated = translate_article_data(content)
         title = translated['title']
         content = translated['content']
         aramco_status: bool = False
         
-        if  not any(keyword.lower() in title.lower() for keyword in self.aramco_keywords) and not any(keyword.lower() in content.lower() for keyword in self.aramco_keywords):
+        if  not any(keyword.lower() in title.lower() for keyword in aramco_keywords) and not any(keyword.lower() in content.lower() for keyword in aramco_keywords):
                 aramco_status = False
         else: aramco_status = True
 
