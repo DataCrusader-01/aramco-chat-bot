@@ -92,27 +92,72 @@ class Audio_Prcessor:
                 os.remove(chunk_path)
             raise e
         
+    # def audio_processor(self, video_path):
+    #     try:
+    #         # Convert video to audio
+    #         audio_processor = Audio_Prcessor()
+    #         audio_path = audio_processor.video_to_audio(video_path)
+    #         audio_trancript = audio_processor.transcribe_audio(audio_path)
+    #         audio_dict = {"audio_path":audio_path, "content":audio_trancript}
+    #         audio_translated = translate_article_data(audio_dict)
+    #         if  not any(keyword.lower() in audio_trancript.lower() for keyword in self.aramco_keywords):
+    #             user_response = st.radio("There are no aramco mentions do you still wish to have further analysis", ("Yes", "No"))
+    #             submit_button = st.button("Submit")
+    #             if submit_button:
+    #                 if user_response == "Yes":
+    #                     rag_result = process_rag(translated_text=audio_translated['content'])
+    #                     # return rag_result
+    #                     st.json(rag_result)
+    #                 else:
+    #                     rag_result = {"Mention":"No Aramco Mention"}
+    #                     st.json(rag_result)
+    #         else:
+    #             rag_result = process_rag(translated_text=audio_translated['content'])
+    #             st.json(rag_result)
+    #     except Exception as e:
+    #         st.error(f"Error processing audio: {str(e)}")
+
     def audio_processor(self, video_path):
         try:
             # Convert video to audio
-            audio_processor = Audio_Prcessor()
-            audio_path = audio_processor.video_to_audio(video_path)
-            audio_trancript = audio_processor.transcribe_audio(audio_path)
-            audio_dict = {"audio_path":audio_path, "content":audio_trancript}
+            audio_path = self.video_to_audio(video_path)
+            audio_transcript = self.transcribe_audio(audio_path)
+            audio_dict = {"audio_path": audio_path, "content": audio_transcript}
             audio_translated = translate_article_data(audio_dict)
-            if  not any(keyword.lower() in audio_trancript.lower() for keyword in self.aramco_keywords):
-                user_response = st.radio("There are no aramco mentions do you still wish to have further analysis", ("Yes", "No"))
-                submit_button = st.button("Submit")
+
+            if not any(keyword.lower() in audio_transcript.lower() for keyword in self.aramco_keywords):
+                # Create columns for better layout
+                col1, col2 = st.columns([3, 1])
+                
+                # Place radio button in first column
+                with col1:
+                    user_response = st.radio(
+                        "There are no Aramco mentions. Do you still wish to have further analysis?",
+                        ("Yes", "No"),
+                        key="aramco_analysis_choice"  # Add a unique key
+                    )
+                
+                # Place submit button in second column
+                with col2:
+                    submit_button = st.button(
+                        "Submit",
+                        key="aramco_submit_button"  # Add a unique key
+                    )
+
                 if submit_button:
-                    # if user_response == "Yes":
-                        rag_result = process_rag(translated_text=audio_translated['content'])
-                        # return rag_result
-                        st.json(rag_result)
-                else:
-                        rag_result = {"Mention":"No Aramco Mention"}
-                        st.json(rag_result)
+                    if user_response == "Yes":
+                        with st.spinner("Processing further analysis..."):
+                            rag_result = process_rag(translated_text=audio_translated['content'])
+                            st.success("Analysis complete!")
+                            return st.json(rag_result)
+                    else:
+                        rag_result = {"Mention": "No Aramco Mention"}
+                        return st.json(rag_result)
             else:
-                rag_result = process_rag(translated_text=audio_translated['content'])
-                st.json(rag_result)
+                with st.spinner("Processing Aramco mentions..."):
+                    rag_result = process_rag(translated_text=audio_translated['content'])
+                    return st.json(rag_result)
+
         except Exception as e:
             st.error(f"Error processing audio: {str(e)}")
+            raise e
