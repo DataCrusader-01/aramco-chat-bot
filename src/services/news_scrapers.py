@@ -164,6 +164,128 @@ def masaader(url):
     except Exception as e:
         return {"error": f"An unexpected error occurred: {e}"}
 
+#Al Watan
+
+def al_watan(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        tree = html.fromstring(response.content)
+
+        title_element = tree.xpath('//h1')
+        title_text = title_element[0].text_content().strip() if title_element else "Title not found"
+
+        date_element = tree.xpath('//li[@class="article-date"]')
+        date_text = date_element[0].text_content().strip() if date_element else "Date not found"
+
+        paragraph_divs = tree.xpath('//div[@class="articleContent"]')
+        content = "\n".join([p.text_content().strip() for p in paragraph_divs]) if paragraph_divs else "Content not found"
+
+        return {
+            "title": title_text,
+            "date": date_text,
+            "content": content
+        }
+
+    except requests.RequestException as e:
+        return {"error": f"Failed to fetch the URL: {e}"}
+
+    except Exception as e:
+        return {"error": f"An unexpected error occurred: {e}"}
+    
+
+#Al Watan
+
+def alroeya(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        tree = html.fromstring(response.content)
+
+        title_element = tree.xpath('//h1')
+        title_text = title_element[0].text_content().strip() if title_element else "Title not found"
+
+        date_element = tree.xpath('//div[@class="article-date"]')
+        date_text = date_element[0].text_content().strip() if date_element else "Date not found"
+
+        paragraph_divs = tree.xpath('//div[@class="article-desc"]')
+        content = "\n".join([p.text_content().strip() for p in paragraph_divs]) if paragraph_divs else "Content not found"
+
+        return {
+            "title": title_text,
+            "date": date_text,
+            "content": content
+        }
+
+    except requests.RequestException as e:
+        return {"error": f"Failed to fetch the URL: {e}"}
+
+    except Exception as e:
+        return {"error": f"An unexpected error occurred: {e}"}
+
+
+##KSA
+
+#Al Eqtisadiah
+
+def aleqtisadiah(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        tree = html.fromstring(response.content)
+
+        title_element = tree.xpath('//h1')
+        title_text = title_element[0].text_content().strip() if title_element else "Title not found"
+
+        date_element = tree.xpath('//li[@class="updated-date"]')
+        date_text = date_element[0].text_content().strip() if date_element else "Date not found"
+
+        paragraph_divs = tree.xpath('//div[@class="field-item even"]')
+        content = "\n".join([p.text_content().strip() for p in paragraph_divs]) if paragraph_divs else "Content not found"
+
+        return {
+            "title": title_text,
+            "date": date_text,
+            "content": content
+        }
+
+    except requests.RequestException as e:
+        return {"error": f"Failed to fetch the URL: {e}"}
+
+    except Exception as e:
+        return {"error": f"An unexpected error occurred: {e}"}
+
+
+#Al Jazirah
+
+def aljazirah(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        tree = html.fromstring(response.content)
+
+        title_element = tree.xpath('//h1')
+        title_text = title_element[0].text_content().strip() if title_element else "Title not found"
+
+        date_element = tree.xpath('//span[@_msttexthash="396396"]')
+        date_text = date_element[0].text_content().strip() if date_element else "Date not found"
+
+        paragraph_divs = tree.xpath('//p')
+        content = "\n".join([p.text_content().strip() for p in paragraph_divs]) if paragraph_divs else "Content not found"
+
+        return {
+            "title": title_text,
+            "date": date_text,
+            "content": content
+        }
+
+    except requests.RequestException as e:
+        return {"error": f"Failed to fetch the URL: {e}"}
+
+    except Exception as e:
+        return {"error": f"An unexpected error occurred: {e}"}
+
+
 def site_selector(url):
     if "www.aletihad.ae" in url:
         return aletihad(url)
@@ -175,5 +297,13 @@ def site_selector(url):
         return cnn_arabic(url)
     elif "masaadernews.com" in url:
         return masaader(url)
+    elif "www.al-jazirah.com" in url:
+        return aljazirah(url)
+    elif "www.aleqt.com" in url:
+        return aleqtisadiah(url)
+    elif "www.alroeya.com" in url:
+        return alroeya(url)
+    elif "www.al-watan.com" in url:
+        return al_watan(url)
     else:
         return {"error": "Unsupported URL"}
