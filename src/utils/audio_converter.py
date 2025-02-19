@@ -10,7 +10,6 @@ from utils.aramco_alert import process_rag
 
 
 class Audio_Prcessor:
-    aramco_keywords = ["aramco", "#aramco", "#saudiaramco", "#saudi#aramco","#aramcosaudi", "#aramco#saudi"]
     def video_to_audio(self, video_path):
             """Convert a video file to an audio file."""
             try:
@@ -91,30 +90,23 @@ class Audio_Prcessor:
             if os.path.exists(chunk_path):
                 os.remove(chunk_path)
             raise e
-
-    def audio_processor(self, video_path):
+  #  @classmethod   
+    def audio_processor(self,video_path):
         try:
             # Convert video to audio
-            audio_path = self.video_to_audio(video_path)
-            audio_transcript = self.transcribe_audio(audio_path)
-            audio_dict = {"audio_path": audio_path, "content": audio_transcript}
+            audio_processor = Audio_Prcessor()
+            audio_path = audio_processor.video_to_audio(video_path)
+            audio_trancript = audio_processor.transcribe_audio(audio_path)
+            audio_dict = {"audio_path":audio_path, "content":audio_trancript}
             audio_translated = translate_article_data(audio_dict)
+        #    if "aramco" not in audio_trancript.lower():
+       #         return {"Mention":"No Aramco Mention"}
+          #  else:
             rag_result = process_rag(translated_text=audio_translated['content'])
-            aramco_mentions = False
-            if not any(keyword.lower() in audio_transcript.lower() for keyword in self.aramco_keywords):
-                aramco_mentions = False
-            else:
-                aramco_mentions = True
-
-            result = {
-                "Audio Path": audio_path,
-                "Transcript": audio_transcript,
-                "Translated": audio_translated,
-                "Analysis": rag_result,
-                "Aramco Mention": aramco_mentions
-            }
-
-            return result
+            return rag_result
         except Exception as e:
             st.error(f"Error processing audio: {str(e)}")
-            raise e
+
+
+#if __name__ == "__main__":
+ #   Video_path =Audio_Prcessor.audio_processor("C:/Users/HP/Downloads/aramco.mp4")

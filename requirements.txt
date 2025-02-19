@@ -21,5 +21,3 @@ langchain_core
 pydantic
 langchain_groq 
 lxml
-instaloader
-google-api-python-client
