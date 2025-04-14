@@ -2,3 +2,5 @@
 .codegpt
 .egg-info
 .env
+.ipynb_checkpoints
+
