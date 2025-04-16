@@ -1,0 +1,35 @@
+name: Telegram Chatbot Cron Job
+
+on:
+  schedule:
+    # Runs every 10 minutes (UTC)
+    - cron: '*/10 * * * *'
+  workflow_dispatch:  # Optional: allows manual runs from GitHub UI
+
+jobs:
+  run-telegram-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up environment variables
+        run: 
+          echo "NEWSAPI=${{ secrets.NEWSAPI }}" >> $GITHUB_ENV
+          echo "GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}" >> $GITHUB_ENV
+          echo "NEWSIO_API=${{ secrets.NEWSIO_API }}" >> $GITHUB_ENV
+          echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> $GITHUB_ENV
+          echo "TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }}" >> $GITHUB_ENV
+          echo "MONGO_URI=${{ secrets.MONGO_URI }}" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3-pip
+          pip3 install -r Telegram\ Chatbot/requirements.txt  # Assuming you have a requirements file
+
+      - name: Run the Telegram Bot
+        run: |
+          cd Telegram\ Chatbot
+          python3 main.py  # Replace this with the script that starts the bot
